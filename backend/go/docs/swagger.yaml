@@ -1,0 +1,385 @@
+basePath: /
+definitions:
+  domain.Car:
+    properties:
+      brand:
+        example: Toyota
+        type: string
+      color:
+        example: White
+        type: string
+      created_at:
+        type: string
+      id:
+        example: 550e8400-e29b-41d4-a716-446655440000
+        type: string
+      model:
+        example: Corolla
+        type: string
+      price:
+        example: 35000
+        type: number
+      updated_at:
+        type: string
+      year:
+        example: 2024
+        type: integer
+    type: object
+  domain.CreateCarRequest:
+    properties:
+      brand:
+        example: Toyota
+        type: string
+      color:
+        example: White
+        type: string
+      model:
+        example: Corolla
+        type: string
+      price:
+        example: 35000
+        type: number
+      year:
+        example: 2024
+        type: integer
+    type: object
+  domain.RequestLog:
+    properties:
+      duration_ms:
+        type: integer
+      ip:
+        type: string
+      method:
+        type: string
+      path:
+        type: string
+      status_code:
+        type: integer
+      timestamp:
+        type: string
+      user_agent:
+        type: string
+    type: object
+  domain.UpdateCarRequest:
+    properties:
+      brand:
+        example: Honda
+        type: string
+      color:
+        example: Black
+        type: string
+      model:
+        example: Civic
+        type: string
+      price:
+        example: 40000
+        type: number
+      year:
+        example: 2025
+        type: integer
+    type: object
+  domain.ValidateRequest:
+    properties:
+      api_key:
+        example: my-api-key-12345
+        type: string
+    type: object
+  domain.ValidateResponse:
+    properties:
+      token:
+        example: eyJhbGciOiJIUzI1NiIs...
+        type: string
+    type: object
+  handler.ErrorResponse:
+    properties:
+      error:
+        type: string
+    type: object
+  handler.PaginatedResponse:
+    properties:
+      data: {}
+      limit:
+        type: integer
+      offset:
+        type: integer
+      total:
+        type: integer
+    type: object
+  handler.SuccessResponse:
+    properties:
+      data: {}
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: A RESTful API for managing cars with Go, Chi, GORM, Redis, Kafka, and
+    MongoDB.
+  title: Cars CRUD API
+  version: "1.0"
+paths:
+  /api/v1/cars:
+    get:
+      description: Get a paginated list of all cars
+      parameters:
+      - default: 0
+        description: Offset
+        in: query
+        name: offset
+        type: integer
+      - default: 10
+        description: Limit
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/handler.PaginatedResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/domain.Car'
+                  type: array
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: List all cars
+      tags:
+      - cars
+    post:
+      consumes:
+      - application/json
+      description: Create a new car entry
+      parameters:
+      - description: Car data
+        in: body
+        name: car
+        required: true
+        schema:
+          $ref: '#/definitions/domain.CreateCarRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            allOf:
+            - $ref: '#/definitions/handler.SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/domain.Car'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Create a car
+      tags:
+      - cars
+  /api/v1/cars/{id}:
+    delete:
+      description: Soft-delete a car by ID
+      parameters:
+      - description: Car ID (UUID)
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Delete a car
+      tags:
+      - cars
+    get:
+      description: Get a single car by its ID
+      parameters:
+      - description: Car ID (UUID)
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/handler.SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/domain.Car'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Get a car
+      tags:
+      - cars
+    put:
+      consumes:
+      - application/json
+      description: Update an existing car by ID
+      parameters:
+      - description: Car ID (UUID)
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Car data to update
+        in: body
+        name: car
+        required: true
+        schema:
+          $ref: '#/definitions/domain.UpdateCarRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/handler.SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/domain.Car'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Update a car
+      tags:
+      - cars
+  /api/v1/logs:
+    get:
+      description: Get a paginated list of all request logs from MongoDB
+      parameters:
+      - default: 0
+        description: Offset
+        in: query
+        name: offset
+        type: integer
+      - default: 20
+        description: Limit
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/handler.PaginatedResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/domain.RequestLog'
+                  type: array
+              type: object
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: List request logs
+      tags:
+      - logs
+  /auth/validate:
+    post:
+      consumes:
+      - application/json
+      description: Validates an API key and returns a JWT token
+      parameters:
+      - description: API Key
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/domain.ValidateRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/handler.SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/domain.ValidateResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+      summary: Validate API Key
+      tags:
+      - auth
+securityDefinitions:
+  BearerAuth:
+    description: 'Type "Bearer" followed by a space and the JWT token. Example: "Bearer
+      eyJhbG..."'
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"
