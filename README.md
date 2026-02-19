@@ -41,7 +41,7 @@ The project follows Clean Architecture to keep concerns separated and the codeba
 
 Dependencies always point **inward**: `Handler → Usecase → Repository (interface) ← Repository (implementation)`. This makes it easy to swap implementations (e.g., replace PostgreSQL with MySQL) without touching business logic.
 
-<img w<img width="8192" height="4926" alt="Kafka Middleware Request-2026-02-19-203020" src="https://github.com/user-attachments/assets/a47ec7e4-3763-4b7c-932e-4f20b4e64fda" />
+<img width="8192" height="4926" alt="Kafka Middleware Request-2026-02-19-203020" src="https://github.com/user-attachments/assets/a47ec7e4-3763-4b7c-932e-4f20b4e64fda" />
 
 ## Tech Stack
 
