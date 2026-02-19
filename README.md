@@ -24,7 +24,10 @@ A full-stack project for practicing backend, frontend, and infrastructure skills
 
 ## Architecture Overview
 
-Client → chi Router → Middlewares (logging, auth) → Handler → Usecase → Repository → PostgreSQL │ │ │ └──→ Redis (cache layer) │ └──→ Kafka (log producer) → Consumer → MongoDB (request_logs)
+```plaintext
+Client → chi Router → Middlewares (logging, auth) → Handler → Usecase → Repository → PostgreSQL
+                                                      └──→ Redis (cache layer) │ └──→ Kafka (log producer) → Consumer → MongoDB (request_logs)
+```
 
 
 ## Clean Architecture
