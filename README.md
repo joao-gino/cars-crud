@@ -24,8 +24,7 @@ A full-stack project for practicing backend, frontend, and infrastructure skills
 
 ## Architecture Overview
 
-Client → chi Router → Middlewares (logging, auth) → Handler → Usecase → Repository → PostgreSQL │ │ │ └──→ Redis (cache layer) │ └──→ Kafka (log producer) → Consumer → MongoDB (request_logs)
-
+<img width="8192" height="1850" alt="Kafka Middleware Request-2026-02-19-202809" src="https://github.com/user-attachments/assets/63597b2a-ad29-4cd0-8297-345180dc966b" />
 
 ## Clean Architecture
 
@@ -41,6 +40,8 @@ The project follows Clean Architecture to keep concerns separated and the codeba
 | **Config** | `pkg/config/` | Application configuration loaded from environment variables. |
 
 Dependencies always point **inward**: `Handler → Usecase → Repository (interface) ← Repository (implementation)`. This makes it easy to swap implementations (e.g., replace PostgreSQL with MySQL) without touching business logic.
+
+<img width="8192" height="4926" alt="Kafka Middleware Request-2026-02-19-203020" src="https://github.com/user-attachments/assets/a47ec7e4-3763-4b7c-932e-4f20b4e64fda" />
 
 ## Tech Stack
 
