@@ -78,11 +78,24 @@ Dependencies always point **inward**: `Handler → Usecase → Repository (inter
 │       ├── docs/                         # Generated swagger files
 │       ├── Dockerfile
 │       └── .env
-├── frontend/                             # (future) React frontend
+├── frontend/
+│   └── react/
+│       ├── src/
+│       │   ├── api/                      # Axios client & API service functions
+│       │   ├── components/               # Reusable UI components
+│       │   ├── hooks/                    # Auth context & custom hooks
+│       │   ├── pages/                    # Login, Cars, Create, Edit pages
+│       │   ├── types/                    # TypeScript types (matching Go domain)
+│       │   ├── App.tsx                   # Router setup
+│       │   ├── App.css                   # Design system & global styles
+│       │   └── main.tsx                  # React entry point
+│       ├── Dockerfile                    # Multi-stage: Node build → Nginx serve
+│       ├── nginx.conf                    # SPA routing + API proxy
+│       └── package.json
 ├── infra/
 │   ├── dev/                              # (future) Dev environment infra
 │   └── prod/                             # (future) Prod environment infra
-├── docker-compose.yml                    # Infrastructure services
+├── docker-compose.yml                    # Infrastructure + frontend services
 ├── Tiltfile                              # Tilt dev orchestration
 └── README.md
 ```
@@ -93,16 +106,20 @@ Dependencies always point **inward**: `Handler → Usecase → Repository (inter
 ### Prerequisites
 
 - Go 1.23+
+- Node.js 20+ & npm
 - Docker & Docker Compose
 - [Tilt](https://tilt.dev/) (optional, recommended)
 - swag CLI: `go install github.com/swaggo/swag/cmd/swag@latest`
 
 ### Using Tilt (recommended)
 
-Tilt starts all infrastructure services (PostgreSQL, Redis, Kafka, Zookeeper, MongoDB) via Docker Compose and runs the Go API locally with live reload.
+Tilt starts all infrastructure services (PostgreSQL, Redis, Kafka, Zookeeper, MongoDB) via Docker Compose, runs the Go API locally with live reload, and starts the React frontend dev server.
 
 ```bash
-# Start everything (defaults to Go backend)
+# Install frontend dependencies first
+cd frontend/react && npm install && cd ../..
+
+# Start everything (defaults to Go backend + React frontend)
 tilt up
 
 # Or explicitly select the backend
@@ -110,6 +127,10 @@ tilt up -- --backend=go
 ```
 
 Open the Tilt dashboard at http://localhost:10350 to see all resources, logs, and statuses. Press space in the terminal to open it automatically.
+
+- **Go API**: http://localhost:8080
+- **React Frontend**: http://localhost:3000
+- **Swagger UI**: http://localhost:8080/swagger/index.html
 
 ## Manual Setup
 
@@ -337,7 +358,7 @@ Input validation is performed at the handler layer before data reaches the useca
 ---
 
 ## Roadmap
-- [ ] **Frontend** — React application for managing cars via the API
+- [x] **Frontend** — React application for managing cars via the API
 - [ ] **Infrastructure** — Separate environments inside `infra/` folder:
 - - [ ] `infra/dev/` — Development environment (local/docker)
 - - [ ] `infra/hml/` — Homologation/staging environment

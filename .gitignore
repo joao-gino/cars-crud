@@ -1,0 +1,22 @@
+# Dependencies
+node_modules/
+
+# Build output
+frontend/react/dist/
+
+# Go
+backend/go/bin/
+
+# Environment files (contain secrets)
+.env
+!backend/go/.env.example
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
